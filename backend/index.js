@@ -44,6 +44,16 @@ app.post("/api/transactions", async (req, res) => {
   res.send("Transaction saved!");
 });
 
+app.get("/api/livePrice/:symbol", async (req, res) => {
+  try {
+    const yahooFinance = require("yahoo-finance2");
+    const { symbol } = req.params;
+    const quote = await yahooFinance.quote(symbol);
+    res.json({ price: quote.regularMarketPrice, name: quote.longName });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch price" });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Portfolio Tracker running on port ${PORT}`);
   mongoose.connect(uri);

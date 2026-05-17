@@ -24,6 +24,7 @@ function HomePage() {
     <>
       <Navbar />
       <Hero />
+    <PortfolioSummary />
       {/* Live price demo section */}
       <div className="container text-center my-5 p-4 border rounded">
         <h3>Live Stock Price Demo</h3>

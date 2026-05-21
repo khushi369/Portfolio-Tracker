@@ -8,6 +8,7 @@ import OpenAccount from "../OpenAccount";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import PortfolioSummary from "./PortfolioSummary";
+import PerformanceChart from "./PerformanceChart";
 
 function HomePage() {
   const [livePrice, setLivePrice] = useState(null);
@@ -24,7 +25,8 @@ function HomePage() {
     <>
       <Navbar />
       <Hero />
-    <PortfolioSummary />
+      <PortfolioSummary />
+      <PerformanceChart />
       {/* Live price demo section */}
       <div className="container text-center my-5 p-4 border rounded">
         <h3>Live Stock Price Demo</h3>

@@ -13,21 +13,35 @@ import PerformanceChart from "./PerformanceChart";
 function HomePage() {
   const [livePrice, setLivePrice] = useState(null);
   const [symbol, setSymbol] = useState("AAPL");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Fetch price whenever symbol changes (automatic)
-  useEffect(() => {
+  const fetchPrice = () => {
+    setLoading(true);
+    setError("");
     fetch(`/api/livePrice/${symbol}`)
-      .then(res => res.json())
-      .then(data => setLivePrice(data.price))
-      .catch(err => console.error("Error fetching price:", err));
+      .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then(data => {
+        setLivePrice(data.price);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching price:", err);
+        setError("Failed to fetch price. Please try again.");
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchPrice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol]);
 
-  // Manual refresh function (same as automatic)
   const refreshPrice = () => {
-    fetch(`/api/livePrice/${symbol}`)
-      .then(res => res.json())
-      .then(data => setLivePrice(data.price))
-      .catch(err => console.error("Error refreshing price:", err));
+    fetchPrice();
   };
 
   return (
@@ -36,13 +50,12 @@ function HomePage() {
       <Hero />
       <PortfolioSummary />
       <PerformanceChart />
-      {/* Live price demo section */}
       <div className="container text-center my-5 p-4 border rounded">
         <h3>Live Stock Price Demo</h3>
         <div className="mt-3">
-          <input 
-            type="text" 
-            value={symbol} 
+          <input
+            type="text"
+            value={symbol}
             onChange={(e) => setSymbol(e.target.value.toUpperCase())}
             placeholder="Enter symbol (e.g., AAPL)"
             className="form-control d-inline-block w-50 me-2"
@@ -54,11 +67,14 @@ function HomePage() {
             Refresh
           </button>
         </div>
-        {livePrice ? (
+        {loading && <p className="mt-4">Loading...</p>}
+        {error && <p className="mt-4 text-danger">{error}</p>}
+        {!loading && !error && livePrice && (
           <div className="mt-4">
             <h4>{symbol}: ${livePrice}</h4>
           </div>
-        ) : (
+        )}
+        {!loading && !error && !livePrice && (
           <p className="mt-4">Click the button to see live price</p>
         )}
       </div>

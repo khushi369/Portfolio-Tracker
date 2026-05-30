@@ -14,12 +14,21 @@ function HomePage() {
   const [livePrice, setLivePrice] = useState(null);
   const [symbol, setSymbol] = useState("AAPL");
 
+  // Fetch price whenever symbol changes (automatic)
   useEffect(() => {
     fetch(`/api/livePrice/${symbol}`)
       .then(res => res.json())
       .then(data => setLivePrice(data.price))
       .catch(err => console.error("Error fetching price:", err));
   }, [symbol]);
+
+  // Manual refresh function (same as automatic)
+  const refreshPrice = () => {
+    fetch(`/api/livePrice/${symbol}`)
+      .then(res => res.json())
+      .then(data => setLivePrice(data.price))
+      .catch(err => console.error("Error refreshing price:", err));
+  };
 
   return (
     <>
@@ -38,8 +47,11 @@ function HomePage() {
             placeholder="Enter symbol (e.g., AAPL)"
             className="form-control d-inline-block w-50 me-2"
           />
-          <button className="btn btn-primary" onClick={() => setSymbol(symbol)}>
+          <button className="btn btn-primary" onClick={refreshPrice}>
             Check Price
+          </button>
+          <button className="btn btn-secondary ms-2" onClick={refreshPrice}>
+            Refresh
           </button>
         </div>
         {livePrice ? (
